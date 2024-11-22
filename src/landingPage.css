@@ -1,0 +1,38 @@
+.landing-container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .options-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .option-box {
+    margin: 0 10px;
+    padding: 20px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    color: #333; /* Add a default text color if needed */
+  }
+  
+  /* Hover effect for better user interaction feedback */
+  .option-box:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Specific text color for each option */
+  .option-box:nth-child(1) {
+    color: #007BFF; /* Example color for Water Bottle */
+  }
+  
+  .option-box:nth-child(2) {
+    color: #28A745; /* Example color for Marker Pen */
+  }
+  
+  .option-box:nth-child(3) {
+    color: #DC3545; /* Example color for Pamphlets */
+  }

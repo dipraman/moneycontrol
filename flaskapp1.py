@@ -9,7 +9,7 @@ def run_server():
     global counter
     try:
         # Pass the counter value to server1.py as a string
-        subprocess.run(["python", "markerServer.py", str(counter)]) 
+        subprocess.run(["python", "cocktail_server.py", str(counter)]) 
         # Increment the counter
         counter += 1
         # Reset the counter after 10 calls

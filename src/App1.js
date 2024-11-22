@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
 const Loader = () => (
   <div className="loader-container">
-    <div className="loader-text">MoneyControl Demo</div>
+    <div className="loader-text">Drinks Handing Bot</div>
   </div>
 );
 
@@ -16,16 +17,16 @@ const App = () => {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = new SpeechRecognition();
+  const synth = window.speechSynthesis; // Setup Speech Synthesis
 
   recognition.continuous = false;
   recognition.interimResults = false;
   recognition.lang = "en-US";
 
   useEffect(() => {
-    // Delay matches bounce + fade-out animation duration (1s + 0.5s)
     const timer = setTimeout(() => {
-      setIsLoading(false); // Hide loader
-    }, 1500); // Total animation duration
+      setIsLoading(false);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -57,12 +58,54 @@ const App = () => {
       { text: message, user: true },
     ]);
 
+    // Check for "hello" in the message
+    if (message.toLowerCase().includes("take") || message.toLowerCase().includes("give")) {
+      callFlaskApp();
+    }
+
     setTimeout(() => {
+      const botReply = "Sure will do the same!";
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: "Thanks", user: false },
+        { text: botReply, user: false },
       ]);
+
+      // Text-to-Speech for bot reply
+      speakText(botReply);
     }, 500);
+  };
+
+  const callFlaskApp = () => {
+    fetch("http://localhost:8000/run-server", {
+      method: "GET",
+    })
+      .then(response => response.text())
+      .then(data => {
+        console.log("Response from Flask app: ", data);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: data, user: false },
+        ]);
+
+        // Optionally, speak out the response
+        speakText(data);
+      })
+      .catch(error => console.error("Error calling Flask app: ", error));
+  };
+
+  const speakText = (text) => {
+    if (synth.speaking) {
+      console.error("SpeechSynthesis.speaking");
+      return;
+    }
+    const utterThis = new SpeechSynthesisUtterance(text);
+    utterThis.onend = () => {
+      console.log("SpeechSynthesisUtterance.onend");
+    };
+    utterThis.onerror = (event) => {
+      console.error("SpeechSynthesisUtterance.onerror", event);
+    };
+    synth.speak(utterThis);
   };
 
   const handleSendMessage = () => {
@@ -72,11 +115,17 @@ const App = () => {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSendMessage();
+    }
+  };
+
   return (
     <>
       {isLoading && <Loader />}
       <div className={`container ${!isLoading ? "visible" : ""}`}>
-        <h1>MoneyControl Demo</h1>
+        <h1>Drinks Handing Bot</h1>
         <div className="chat-container">
           {messages.map((msg, index) => (
             <div
@@ -93,6 +142,7 @@ const App = () => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type your message here..."
+            onKeyDown={handleKeyDown} // Add onKeyDown handler
           />
           <button className="btn" onClick={handleSendMessage}>
             Send

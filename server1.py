@@ -2,6 +2,7 @@ import socket
 import json
 import time
 import sys
+import copy
 
 def connectETController(ip, port=8055):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -66,25 +67,174 @@ if __name__ == "__main__":
     # Set robot speed
     P000 = [0, -90, 90, -90, 90, 0]
     suc, result, id = sendCMD(sock, "setSpeed", {"value": 40})
- 
-    print(counter)
-    z=94 #z axis value for whole area for the whole 3D Area
-    if(counter==0):
-        print("case 1")
-        #result11=[226.20597909690838, -354.43577410292, z, -1.7269827594112361, -0.6559210500675622, 0.32329058507549313]
-        result11=[149.0484180807635, -492.4990153509084, 93.69822261104464, 0.0019172977194325323, -0.22762071232394943, 2.557111366629074]
-        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": result11, "referencePos": P000})
-        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
-    else:
-        print("case 2")
-        result11=[-20.0484180807635, -492.4990153509084, 93.69822261104464, 0.0019172977194325323, -0.22762071232394943, 2.557111366629074]
-        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": result11, "referencePos": P000})
-        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
-
-
-    print("motion result", result)
+    botle1_postion=[235.01141305661722, -252.91280417450878, 77.94909674217257, -1.5203197776779127, 0.08026867099989163, 0.24848573699502394]
+    botle2_postion=copy.deepcopy(botle1_postion)
+    botle2_postion[0]-=130
+    bottle3_position=copy.deepcopy(botle1_postion)
+    bottle3_position[1]-=130
+    bottle4_position=copy.deepcopy(botle2_postion)
+    bottle4_position[1]-=130
+    home_pos=[92.77712697939901, -333.21414338121645, 295.4368253751115, -1.5324794176884242, 0.10238945100503777, 0.25035378560372745] 
     
-    time.sleep(10)
+
+    print(counter)
+    if(counter==0):
+        print("case1")
+        botle1_postion_top=copy.deepcopy(botle1_postion)
+        botle1_postion_top[2]+=100
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": home_pos, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":50, "dec":50})
+        print("home position",result)
+        time.sleep(15)
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": botle1_postion_top, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 1 position top",result)
+        time.sleep(10)
+        
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": botle1_postion, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 1 position",result)
+        print(botle1_postion)
+        time.sleep(10)
+        
+
+        suc, result ,id=sendCMD(sock,"setOutput",{"addr":0,"status":1})
+        print ( result )
+        time.sleep(1.5)
+
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": botle1_postion_top, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 1 position top", result)
+        time.sleep(7)
+        
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": home_pos, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":50, "dec":50})
+        print("home position",result)
+
+        time.sleep(7)
+
+        
+    elif(counter==1):
+        print("case2")
+        botle2_postion_top=copy.deepcopy(botle2_postion)
+        botle2_postion_top[2]+=100
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": home_pos, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":50, "dec":50})
+        print("home position",result)
+        time.sleep(15)
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": botle2_postion_top, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":70, "dec":50})
+        print("bottle 2 position top",result)
+        time.sleep(10)
+        
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": botle2_postion, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 2 position",result)
+        print(botle1_postion)
+        time.sleep(10)
+        
+
+        suc, result ,id=sendCMD(sock,"setOutput",{"addr":0,"status":1})
+        print ( result )
+        time.sleep(1.5)
+
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": botle2_postion_top, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 2 position top", result)
+        time.sleep(7)
+        
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": home_pos, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":50, "dec":50})
+        print("home position",result)
+
+        time.sleep(7)        
+
+    elif(counter==2):
+        print("case3")
+        botle3_postion_top=copy.deepcopy(bottle3_position)
+        botle3_postion_top[2]+=100
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": home_pos, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":50, "dec":50})
+        print("home position",result)
+        time.sleep(15)
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": botle3_postion_top, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 3 position top",result)
+        time.sleep(10)
+        
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": bottle3_position, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 3 position",result)
+        print(bottle3_position)
+        time.sleep(10)
+        
+
+        suc, result ,id=sendCMD(sock,"setOutput",{"addr":0,"status":1})
+        print ( result )
+        time.sleep(1.5)
+
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": botle3_postion_top, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 3 position top", result)
+        time.sleep(7)
+        
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": home_pos, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":50, "dec":50})
+        print("home position",result)
+
+        time.sleep(7)        
+
+    else:
+        print("case4")
+        bottle4_position_top=copy.deepcopy(bottle4_position)
+        bottle4_position_top[2]+=100
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": home_pos, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":50, "dec":50})
+        print("home position",result)
+        time.sleep(15)
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": bottle4_position_top, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":70, "dec":50})
+        print("bottle 4 position top",result)
+        time.sleep(10)
+        
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": bottle4_position, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 4 position",result)
+        print(bottle4_position)
+        time.sleep(10)
+        
+
+        suc, result ,id=sendCMD(sock,"setOutput",{"addr":0,"status":1})
+        print ( result )
+        time.sleep(1.5)
+
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": bottle4_position_top, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByLine", {"targetPos": pose1, "speed_type":0, "speed": 200, "cond_type": 0, "cond_num": 7, "cond_value": 1})
+        print("bottle 4 position top", result)
+        time.sleep(7)
+        
+
+        suc, pose1, id = sendCMD(sock, "inverseKinematic", {"targetPose": home_pos, "referencePos": P000})
+        suc, result, id = sendCMD(sock, "moveByJoint", {"targetPos": pose1, "speed":20, "acc":50, "dec":50})
+        print("home position",result)
+
+        time.sleep(7)        
+
 
     if conSuc:
         suc, result, id = sendCMD(sock, "checkJbiExist", {"filename": jbi_filename})
@@ -107,6 +257,11 @@ if __name__ == "__main__":
 
     suc, result, id = sendCMD(sock, "get_tcp_pose")
     print(result)
+
+    suc, result ,id=sendCMD(sock,"setOutput",{"addr":0,"status":0})
+    
+    time.sleep(1.5)
+    print ( result )
 
     # If servo is on, turn it off
     suc, result, id = sendCMD(sock, "getServoStatus")

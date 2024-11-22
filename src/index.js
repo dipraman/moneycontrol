@@ -1,17 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import './index.css'; // Import global CSS
+import MainApp from './MainApp'; // Make sure to import your routing setup correctly
+import reportWebVitals from './reportWebVitals'; // Optional, only use if you're interested in measuring performance
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <MainApp /> {/* Use MainApp or whichever main component handles routing */}
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+reportWebVitals(); // Optional: Can be removed if performance tracking isn't needed
