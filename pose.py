@@ -43,5 +43,5 @@ if __name__ == "__main__":
     robot_ip = "192.168.1.200"
     conSuc, sock = connectETController(robot_ip)
 
-    suc, result, id = sendCMD(sock, "get_tcp_pose")
+    suc, result, id = sendCMD(sock, "open_tci")
     print(result)
